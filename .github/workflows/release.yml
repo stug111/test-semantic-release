@@ -33,3 +33,27 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx --package @semantic-release/commit-analyzer --package @semantic-release/git --package @semantic-release/npm semantic-release
+
+  sync-branches:
+    needs: release
+    runs-on: ubuntu-latest
+
+    if: github.ref == 'refs/heads/main' && needs.release.result == 'success'
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Merge main into dev
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git checkout dev
+          git merge origin/main --no-edit
+          git push origin dev
