@@ -10,6 +10,8 @@ jobs:
   release:
     runs-on: ubuntu-latest
     permissions:
+      contents: write
+      id-token: write
       pull-requests: write
 
     steps:
@@ -30,4 +32,4 @@ jobs:
       - name: Semantic release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release
+        run: npx --package @semantic-release/commit-analyzer --package @semantic-release/git --package @semantic-release/npm semantic-release
